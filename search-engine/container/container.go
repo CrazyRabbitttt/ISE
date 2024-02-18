@@ -1,8 +1,11 @@
 package container
 
 import (
+	"Search-Engine/config"
 	"Search-Engine/search-engine/engine"
 	tokenizer2 "Search-Engine/search-engine/words/tokenizer"
+	"fmt"
+	"os"
 )
 
 var GlobalContainer *Container
@@ -17,21 +20,25 @@ type Container struct {
 
 func InitGlobalContainer(tokenizer *tokenizer2.Tokenizer) {
 	GlobalContainer = &Container{
-		Tokenizer: tokenizer,
+		Tokenizer:       tokenizer,
+		IndexStorageDir: config.GlobalConfig.DB["default"].IndexStorageDir,
 	}
 }
 
 func (c *Container) NewEngine() *engine.Engine {
+	dbConfig := config.GlobalConfig.DB["default"]
+	workDir, _ := os.Getwd()
 	engine := &engine.Engine{
-		IndexPath:             c.IndexStorageDir,
+		IndexPath:             workDir + "/" + c.IndexStorageDir,
 		Tokenizer:             c.Tokenizer,
 		ShardNum:              c.ShardNum,
 		BufferNum:             c.BufferNum,
-		InvertIndexName:       "inverted_index",
-		PositiveIndexName:     "positive_index",
-		RepositoryStorageName: "repository_storage",
-		TimeOut:               30,
+		InvertIndexName:       dbConfig.InvertIndexName,
+		PositiveIndexName:     dbConfig.PositiveIndexName,
+		RepositoryStorageName: dbConfig.RepositoryStorageName,
+		TimeOut:               dbConfig.TimeOut,
 	}
+	fmt.Println("The index path is:", engine.IndexPath)
 	engine.Init()
 	return engine
 }
@@ -39,8 +46,12 @@ func (c *Container) NewEngine() *engine.Engine {
 func (c *Container) GetEngine() *engine.Engine {
 	var engine *engine.Engine
 	if c.engines == nil {
+		fmt.Println("engine is nil, create")
 		engine = c.NewEngine()
+		c.engines = engine
+		return c.engines
 	} else {
+		fmt.Println("engine not null")
 		engine = c.engines
 	}
 	return engine

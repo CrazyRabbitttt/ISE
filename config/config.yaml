@@ -1,12 +1,12 @@
 db:
   default:
-    indexStorageDir: "data"
+    indexStorageDir: "data/index_data"
     bufferNum: 1000
-    shardNum: 12
+    shardNum: 10
     invertIndexName: "inverted_index"
     positiveIndexName: "positive_index"
     repositoryStorageName: "repository_storage"
-
+    timeOut: 30
 
 web:
   default:

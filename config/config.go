@@ -20,6 +20,7 @@ type DB struct {
 	InvertIndexName       string `yaml:"invertIndexName"`
 	PositiveIndexName     string `yaml:"positiveIndexName"`
 	RepositoryStorageName string `yaml:"repositoryStorageName"`
+	TimeOut               int64  `yaml:"timeOut"`
 }
 
 type Web struct {
@@ -28,7 +29,6 @@ type Web struct {
 
 func InitConfig() {
 	workdir, _ := os.Getwd()
-	fmt.Println("work dir is:", workdir)
 	viper.SetConfigName("config.yaml")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(workdir + "/config")
@@ -42,6 +42,4 @@ func InitConfig() {
 		panic(err)
 	}
 	fmt.Println("Config 初始化成功")
-	mConfig := GlobalConfig.DB["default"]
-	fmt.Println(mConfig.InvertIndexName, mConfig.IndexStorageDir, mConfig.ShardNum)
 }
