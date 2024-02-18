@@ -9,6 +9,7 @@ func InitBaseRouter(group *gin.RouterGroup) {
 	baseRouter := group.Group("")
 	{
 		baseRouter.GET("/ping", controller.Welcome)
+		baseRouter.GET("/cut", controller.Cut)
 		baseRouter.POST("/query", controller.Query)
 	}
 }

@@ -1,20 +1,23 @@
 package core
 
 import (
+	"Search-Engine/config"
+	"Search-Engine/search-engine/container"
 	tokenizer2 "Search-Engine/search-engine/words/tokenizer"
 	"Search-Engine/web/router"
-	"fmt"
+	"Search-Engine/web/service"
 )
 
 // 进行初始化
 func Initialize() {
+	// 初始化全局的配置文件
+	config.InitConfig()
 	// 初始化分词器
 	tokenizer := tokenizer2.NewTokenizer()
-	str := "上海市的海上面有上海滩"
-	words := tokenizer.Cut(str)
-	for _, v := range words {
-		fmt.Print(v, ",")
-	}
+	// 初始化全局的 Container
+	container.InitGlobalContainer(tokenizer)
+	// 初始化业务逻辑
+	service.InitService()
 	// 初始化路由
 	r := router.InitRouter()
 	r.Run()

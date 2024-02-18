@@ -15,3 +15,11 @@ func ResponseOkWithMessage(data interface{}) *ResponseData {
 		Data:    data,
 	}
 }
+
+func ResponseErrWithMessage(data interface{}) *ResponseData {
+	return &ResponseData{
+		State:   http.StatusBadRequest,
+		Message: "fail",
+		Data:    data,
+	}
+}

@@ -1,0 +1,13 @@
+db:
+  default:
+    indexStorageDir: "data"
+    bufferNum: 1000
+    shardNum: 12
+    invertIndexName: "inverted_index"
+    positiveIndexName: "positive_index"
+    repositoryStorageName: "repository_storage"
+
+
+web:
+  default:
+    serverPort: 8080
