@@ -1,6 +1,11 @@
 package util
 
-import "regexp"
+import (
+	"bytes"
+	"encoding/binary"
+	"encoding/gob"
+	"regexp"
+)
 
 const (
 	c1 = 0xcc9e2d51
@@ -70,4 +75,65 @@ func RemoveSpace(word string) string {
 func String2Int(str string) uint32 {
 	// 获得一个 Hash 值
 	return Murmur3([]byte(str))
+}
+
+func Uint32ToBytes(num uint32) []byte {
+	var buf = make([]byte, 4)
+	binary.BigEndian.PutUint32(buf, num)
+	return buf
+}
+
+func Encoder(data interface{}) []byte {
+	if data == nil {
+		return nil
+	}
+	buffer := new(bytes.Buffer)
+	encoder := gob.NewEncoder(buffer)
+	err := encoder.Encode(data)
+	if err != nil {
+		panic(err)
+	}
+	return buffer.Bytes()
+}
+
+// 从 Leveldb 中将读取到的value解析出来
+func Decoder(data []byte, v interface{}) {
+	if data == nil {
+		return
+	}
+	buffer := bytes.NewBuffer(data)
+	decoder := gob.NewDecoder(buffer)
+	err := decoder.Decode(v)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func RemoveUint32ValueInArray(array []uint32, id uint32) []uint32 {
+	var removeIndex int
+	for index, value := range array {
+		if value == id {
+			removeIndex = index
+			break
+		}
+	}
+	return append(array[:removeIndex], array[removeIndex+1:]...)
+}
+
+func ExistInArrayUint32(array []uint32, id uint32) (int, bool) {
+	for index, value := range array {
+		if value == id {
+			return index, true
+		}
+	}
+	return -1, false
+}
+
+func ExistInArrayString(array []string, word string) (int, bool) {
+	for index, value := range array {
+		if word == value {
+			return index, true
+		}
+	}
+	return -1, false
 }

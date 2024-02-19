@@ -6,3 +6,8 @@ type IndexDoc struct {
 	Text  string                 `json:"term"`  // 分词后即是倒排索引的 terms
 	Attrs map[string]interface{} `json:"attrs"` // 文档对应的特征(属性)
 }
+
+type RepositoryIndexDoc struct {
+	*IndexDoc
+	Terms []string `json:"terms"`
+}
