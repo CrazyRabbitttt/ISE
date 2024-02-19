@@ -1,0 +1,16 @@
+=============== Feb 19, 2024 (CST) ===============
+15:34:11.339667 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:34:11.377804 db@open opening
+15:34:11.378613 version@stat F·[] S·0B[] Sc·[]
+15:34:11.397186 db@janitor F·2 G·0
+15:34:11.397250 db@open done T·19.403875ms
+=============== Feb 19, 2024 (CST) ===============
+15:36:52.772360 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:36:52.777679 version@stat F·[] S·0B[] Sc·[]
+15:36:52.777824 db@open opening
+15:36:52.778328 journal@recovery F·1
+15:36:52.778610 journal@recovery recovering @1
+15:36:52.798671 memdb@flush created L0@2 N·1 S·200B "北站,v1":"北站,v1"
+15:36:52.799147 version@stat F·[1] S·200B[200B] Sc·[0.25]
+15:36:52.874874 db@janitor F·3 G·0
+15:36:52.874962 db@open done T·97.101292ms

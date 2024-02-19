@@ -47,10 +47,8 @@ func (engine *Engine) Init() {
 		invertIndexFileName := fmt.Sprintf("%s_%d", engine.InvertIndexName, i)
 		positiveIndexFileName := fmt.Sprintf("%s_%d", engine.PositiveIndexName, i)
 		repositoryStorageName := fmt.Sprintf("%s_%d", engine.RepositoryStorageName, i)
-		//fmt.Println("The invertIndexfileName:", invertIndexFileName)
 		// 倒排索引
-		//s, err := storage.NewStorage(engine.IndexPath+"/"+invertIndexFileName, engine.TimeOut)
-		s, err := storage.NewStorage("./data/index_data/"+invertIndexFileName, engine.TimeOut)
+		s, err := storage.NewStorage(engine.IndexPath+"/"+invertIndexFileName, engine.TimeOut)
 		if err != nil {
 			panic(err)
 		}
@@ -74,7 +72,6 @@ func (engine *Engine) Init() {
 
 func (engine *Engine) AddIndexDocLoop(worker chan *model.IndexDoc) {
 	for {
-		fmt.Println("Channel阻塞等待，等待IndexDoc的添加...")
 		indexDoc := <-worker // 试图从channel中读取待添加的Doc，没有的话就阻塞在这里
 		fmt.Println("成功添加IndexDoc到Channel中, docId:", indexDoc.Key, "text", indexDoc.Text, "attrs", indexDoc.Attrs)
 		engine.AddIndexDoc2Engine(indexDoc)
@@ -86,7 +83,6 @@ func (e *Engine) AddIndexDoc2Chan(indexDoc *model.IndexDoc) {
 	docId := indexDoc.Key
 	e.DocumentCnt++
 	e.AddIndexDocChan[e.GetShardNumByDocId(docId)] <- indexDoc
-	fmt.Println("addIndex完成将 indexDoc 添加到对应的channel中")
 }
 
 func (e *Engine) AddIndexDoc2Engine(indexDoc *model.IndexDoc) {
@@ -114,6 +110,7 @@ func (e *Engine) AddIndexDoc2Engine(indexDoc *model.IndexDoc) {
 				也会将value给替换掉。
 	*/
 	terms2bRemoved, terms2bInserted := e.PrepareForHandle(terms, docId) // 内置了对于DB的handle， 需要进行加锁🔒
+	fmt.Printf("The len of remove:%d, the len of insert:%d", len(terms2bRemoved), len(terms2bInserted))
 	// 倒排索引：删除索引
 	for _, value := range terms2bRemoved {
 		e.RemoveDocIdInInvertIndex(value, docId)
@@ -183,6 +180,7 @@ func (e *Engine) AddDocIdInInvertIndex(term string, docId uint32) {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()
 
+	fmt.Println("执行倒排索引结构的增添, term:", term, ", docId:", docId)
 	var docIdList = make([]uint32, 0)
 	invertIndex := e.InvertedIndexStorage[e.GetShardNumByTerm(term)]
 	buf, exist := invertIndex.Get([]byte(term))
