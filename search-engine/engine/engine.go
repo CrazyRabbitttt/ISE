@@ -2,6 +2,7 @@ package engine
 
 import (
 	"Search-Engine/search-engine/model"
+	"Search-Engine/search-engine/sort"
 	"Search-Engine/search-engine/storage"
 	"Search-Engine/search-engine/util"
 	tokenizer2 "Search-Engine/search-engine/words/tokenizer"
@@ -67,7 +68,6 @@ func (engine *Engine) Init() {
 		engine.RepositoryStorage = append(engine.RepositoryStorage, sS)
 		fmt.Println("End of new engine function.")
 	}
-
 }
 
 func (engine *Engine) AddIndexDocLoop(worker chan *model.IndexDoc) {
@@ -217,6 +217,37 @@ func (e *Engine) RemoveDocIdInInvertIndex(term string, docId uint32) {
 		} else {
 			invertIndex.Set([]byte(term), util.Encoder(docIdList))
 		}
+	}
+}
+
+func (e *Engine) Search(request *model.SearchRequest) (*model.SearchResponse, error) {
+	searchContext := &sort.SearchContext{} // 本次搜索的上下文（包括待选数据集等）
+	// 1. 首先对于 query 进行分词处理
+	terms := e.Tokenizer.Cut(request.Query)
+	termCnt := len(terms)
+	// 2. 查询倒排索引，获取 terms 对应的 docIdList 作为候选结果集，后续排序啥的用
+	wg := &sync.WaitGroup{}
+	for i := 0; i < termCnt; i++ {
+		go e.AddDocIdList2ContextByTerm(terms[i], searchContext, wg)
+		wg.Done()
+	}
+	wg.Wait() // 等待多线程完成对于不同分片的 候选集 的添加
+
+	// 3. Preprocessing 预处理数据, 获得待选集doc命中的term数量
+	searchContext.PreProcess()
+	// 4. AssignScore 赋分数
+	searchContext.AssignScores()
+}
+
+func (e *Engine) AddDocIdList2ContextByTerm(term string, context *sort.SearchContext, wg *sync.WaitGroup) {
+	defer wg.Done()
+	index := e.GetShardNumByTerm(term)
+	invertIndex := e.InvertedIndexStorage[index]
+	var docIdList []uint32
+	buf, exist := invertIndex.Get([]byte(term))
+	if exist {
+		util.Decoder(buf, &docIdList)
+		context.AddCandidate(&docIdList)
 	}
 }
 

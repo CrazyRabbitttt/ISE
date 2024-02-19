@@ -11,3 +11,9 @@ type RepositoryIndexDoc struct {
 	*IndexDoc
 	Terms []string `json:"terms"`
 }
+
+type SearchResponseDoc struct {
+	IndexDoc
+	Docs  []*RepositoryIndexDoc
+	Score int
+}

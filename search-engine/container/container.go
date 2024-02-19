@@ -51,7 +51,6 @@ func (c *Container) GetEngine() *engine.Engine {
 		c.engines = engine
 		return c.engines
 	} else {
-		fmt.Println("engine not null")
 		engine = c.engines
 	}
 	return engine

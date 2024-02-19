@@ -11,7 +11,7 @@ func AddIndex(c *gin.Context) {
 	indexDoc := &model.IndexDoc{}
 	err := c.ShouldBind(&indexDoc)
 	if err != nil {
-		ResponseErrWithMessage("结构化读取Request请求失败, parse indexDoc")
+		ResponseErrWithMessage("解析Http请求到结构体(indexDoc)失败")
 	}
 	err = service.GlobalService.IndexService.AddIndexDoc(indexDoc)
 	//fmt.Println("IndexService处理完IndexDoc")
