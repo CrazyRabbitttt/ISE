@@ -220,23 +220,33 @@ func (e *Engine) RemoveDocIdInInvertIndex(term string, docId uint32) {
 	}
 }
 
-func (e *Engine) Search(request *model.SearchRequest) (*model.SearchResponse, error) {
-	searchContext := &sort.SearchContext{} // 本次搜索的上下文（包括待选数据集等）
+func (e *Engine) Search(request *model.SearchRequest) (*model.SimpleSearchResponse, error) {
+	searchContext := &sort.SearchContext{ // 本次搜索的上下文（包括待选数据集等）
+		Query: request.Query,
+	}
 	// 1. 首先对于 query 进行分词处理
 	terms := e.Tokenizer.Cut(request.Query)
 	termCnt := len(terms)
 	// 2. 查询倒排索引，获取 terms 对应的 docIdList 作为候选结果集，后续排序啥的用
 	wg := &sync.WaitGroup{}
+	wg.Add(termCnt)
 	for i := 0; i < termCnt; i++ {
-		go e.AddDocIdList2ContextByTerm(terms[i], searchContext, wg)
-		wg.Done()
+		go e.AddDocIdList2ContextByTerm(terms[i], searchContext, wg) // 类似于查询倒排索引这一步
 	}
 	wg.Wait() // 等待多线程完成对于不同分片的 候选集 的添加
-
+	fmt.Println(searchContext.CandidateDocIds)
 	// 3. Preprocessing 预处理数据, 获得待选集doc命中的term数量
 	searchContext.PreProcess()
-	// 4. AssignScore 赋分数
+	// 4. 拿到 docId 对应的一些特征，这里其实类似于查询 正排索引 这一步, 将候选集的特征进行 Enrich
+	e.AddAttrs2ContextByDocId(searchContext, wg)
+	// 5. AssignScore 赋分数
 	searchContext.AssignScores()
+
+	response := &model.SimpleSearchResponse{
+		Terms:      terms,
+		Candidates: searchContext.CandidateItems,
+	}
+	return response, nil
 }
 
 func (e *Engine) AddDocIdList2ContextByTerm(term string, context *sort.SearchContext, wg *sync.WaitGroup) {
@@ -248,6 +258,41 @@ func (e *Engine) AddDocIdList2ContextByTerm(term string, context *sort.SearchCon
 	if exist {
 		util.Decoder(buf, &docIdList)
 		context.AddCandidate(&docIdList)
+	}
+}
+
+func (e *Engine) AddAttrs2ContextByDocId(context *sort.SearchContext, wg *sync.WaitGroup) {
+	// 获得 docId 对应的文档库，拿到一些特征（例如Title）
+	// 这里可以开启多个 goroutine 同时获取 doc 对应的特征
+	wg.Add(len(context.CandidateItems))
+	for i, item := range context.CandidateItems {
+		docId := item.Id
+		go e.GetAttrsFromStorageByDocId(docId, &context.CandidateItems[i], wg)
+	}
+	wg.Wait()
+}
+
+// GetAttrsFromStorageByDocId 函数获取 doc 对应的文档，从中取出来特征并且赋值给传入的 候选集 的字段中
+func (e *Engine) GetAttrsFromStorageByDocId(docId uint32, candidateItem *model.CandidateItem, wg *sync.WaitGroup) {
+	e.mutex.Lock()
+	e.mutex.Unlock()
+	defer wg.Done()
+
+	shardIndex := e.GetShardNumByDocId(docId)
+	storageIndex := e.RepositoryStorage[shardIndex]
+
+	buf, exist := storageIndex.Get(util.Uint32ToBytes(docId))
+	if exist {
+		repos := new(model.RepositoryIndexDoc)
+		util.Decoder(buf, &repos)
+		attrs := repos.Attrs
+		titleInterface := attrs["title"]
+		if title, ok := titleInterface.(string); ok {
+			candidateItem.Title = title
+			fmt.Printf("Assign title, docId:%d, title:%s\n", candidateItem.Id, candidateItem.Title)
+		}
+	} else {
+		fmt.Printf("There is no doc in storage, doc id:%d\n", docId)
 	}
 }
 

@@ -15,6 +15,6 @@ func NewBaseService() *BaseService {
 	}
 }
 
-func (s *BaseService) Query(searchRequest *model.SearchRequest) (*model.SearchResponse, error) {
+func (s *BaseService) Query(searchRequest *model.SearchRequest) (*model.SimpleSearchResponse, error) {
 	return container.GlobalContainer.GetEngine().Search(searchRequest)
 }

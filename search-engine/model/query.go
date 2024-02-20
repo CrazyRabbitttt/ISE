@@ -11,3 +11,8 @@ type SearchResponse struct {
 	Terms     []string            `json:"terms"`    // 查询的关键词，主要是用于验证下正确性
 	Documents []SearchResponseDoc `json:"documents"`
 }
+
+type SimpleSearchResponse struct {
+	Terms      []string        `json:"terms"`
+	Candidates []CandidateItem `json:"candidates"`
+}

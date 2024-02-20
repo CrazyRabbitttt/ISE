@@ -17,8 +17,11 @@ func Query(c *gin.Context) {
 	if err := c.ShouldBind(&queryRequest); err != nil {
 		c.JSON(http.StatusBadRequest, ResponseErrWithMessage("解析Http请求到结构体(SearchRequest)失败"))
 	}
-	service.GlobalService.BaseService.Query(queryRequest)
-	c.JSON(http.StatusOK, ResponseOkWithMessage("Access the query function"))
+	response, err := service.GlobalService.BaseService.Query(queryRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ResponseErrWithMessage("查询出现异常"))
+	}
+	c.JSON(http.StatusOK, ResponseOkWithMessage(response))
 }
 
 func Cut(c *gin.Context) {
