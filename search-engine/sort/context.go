@@ -2,6 +2,7 @@ package sort
 
 import (
 	"Search-Engine/search-engine/model"
+	"Search-Engine/search-engine/util"
 	"fmt"
 	"sync"
 )
@@ -50,13 +51,14 @@ func (s *SearchContext) AssignScores() {
 	/*
 		strategy:
 			1. 针对于上面计算的待选集合的命中的频率, 命中频率比较高的分数肯定是更多的
-			2. (todo)可以计算多个 List 的交集，交集中的数据说明 全部命中，对应的分数也要提升上去
-			3. (todo)直接判断一下标题和query的 最长公共子序列 的长度，较长的分数也要提上去
+			2. 直接判断一下标题和query的 最长公共子序列 的长度，较长的分数也要提上去
+			3. (todo)可以计算多个 List 的交集，交集中的数据说明 全部命中，对应的分数也要提升上去
 	*/
-	// strategy1:
+	// strategy2: 按照最长公共子序列的匹配程度来加分
 	for index, item := range s.CandidateItems {
-		s.CandidateItems[index].Score = float64(item.Frequency)
+		candidateTitle, query := item.Title, s.Query
+		lcsLen := util.CalculateLCS(candidateTitle, query)
+		s.CandidateItems[index].Score += float64(lcsLen)
+		s.CandidateItems[index].Score += float64(item.Frequency)
 	}
-	// strategy2:
-
 }

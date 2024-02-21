@@ -3,6 +3,7 @@ package container
 import (
 	"Search-Engine/config"
 	"Search-Engine/search-engine/engine"
+	"Search-Engine/search-engine/reminder"
 	tokenizer2 "Search-Engine/search-engine/words/tokenizer"
 	"fmt"
 	"os"
@@ -37,6 +38,7 @@ func (c *Container) NewEngine() *engine.Engine {
 		PositiveIndexName:     dbConfig.PositiveIndexName,
 		RepositoryStorageName: dbConfig.RepositoryStorageName,
 		TimeOut:               dbConfig.TimeOut,
+		TrieReminder:          reminder.NewTrie(),
 	}
 	fmt.Println("The index path is:", engine.IndexPath)
 	engine.Init()

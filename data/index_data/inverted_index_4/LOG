@@ -166,3 +166,37 @@
 22:49:25.543634 version@stat F·[0 1] S·254B[0B 254B] Sc·[0.00 0.00]
 22:49:25.734404 db@janitor F·3 G·0
 22:49:25.768122 db@open done T·230.921625ms
+=============== Feb 20, 2024 (CST) ===============
+23:17:28.305098 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+23:17:28.307632 version@stat F·[0 1] S·254B[0B 254B] Sc·[0.00 0.00]
+23:17:28.307772 db@open opening
+23:17:28.308230 journal@recovery F·1
+23:17:28.308493 journal@recovery recovering @33
+23:17:28.309432 version@stat F·[0 1] S·254B[0B 254B] Sc·[0.00 0.00]
+23:17:28.383597 db@janitor F·3 G·0
+23:17:28.383652 db@open done T·75.848416ms
+23:18:17.935377 db@close closing
+23:18:17.935933 db@close done T·1.415875ms
+=============== Feb 21, 2024 (CST) ===============
+22:22:40.662612 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+22:22:40.669927 version@stat F·[0 1] S·254B[0B 254B] Sc·[0.00 0.00]
+22:22:40.670010 db@open opening
+22:22:40.670272 journal@recovery F·1
+22:22:40.670422 journal@recovery recovering @35
+22:22:40.708151 memdb@flush created L0@37 N·2 S·217B "楼市,v13":"肺炎,v12"
+22:22:40.708727 version@stat F·[1 1] S·471B[217B 254B] Sc·[0.25 0.00]
+22:22:40.885293 db@janitor F·4 G·0
+22:22:40.901532 db@open done T·231.500375ms
+22:23:15.379965 db@close closing
+22:23:15.381581 db@close done T·2.343709ms
+=============== Feb 21, 2024 (CST) ===============
+22:44:29.089128 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+22:44:29.102913 version@stat F·[1 1] S·471B[217B 254B] Sc·[0.25 0.00]
+22:44:29.103034 db@open opening
+22:44:29.103399 journal@recovery F·1
+22:44:29.107326 journal@recovery recovering @38
+22:44:29.113011 version@stat F·[1 1] S·471B[217B 254B] Sc·[0.25 0.00]
+22:44:29.329596 db@janitor F·4 G·0
+22:44:29.329620 db@open done T·226.571792ms
+22:45:09.085168 db@close closing
+22:45:09.085416 db@close done T·250.833µs

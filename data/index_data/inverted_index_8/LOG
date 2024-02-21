@@ -6,3 +6,27 @@
 21:27:13.200676 db@open done T·50.3365ms
 21:27:47.455843 db@close closing
 21:27:47.457895 db@close done T·2.09875ms
+=============== Feb 20, 2024 (CST) ===============
+23:17:46.438453 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+23:17:46.441075 version@stat F·[] S·0B[] Sc·[]
+23:17:46.441238 db@open opening
+23:17:46.441985 journal@recovery F·1
+23:17:46.442240 journal@recovery recovering @1
+23:17:46.463107 memdb@flush created L0@2 N·1 S·198B "地区,v1":"地区,v1"
+23:17:46.463783 version@stat F·[1] S·198B[198B] Sc·[0.25]
+23:17:46.525825 db@janitor F·3 G·0
+23:17:46.525889 db@open done T·84.612167ms
+23:18:17.933854 db@close closing
+23:18:17.935117 db@close done T·1.261166ms
+=============== Feb 21, 2024 (CST) ===============
+22:22:21.422887 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+22:22:21.454842 version@stat F·[1] S·198B[198B] Sc·[0.25]
+22:22:21.454905 db@open opening
+22:22:21.455120 journal@recovery F·1
+22:22:21.455213 journal@recovery recovering @3
+22:22:21.475150 memdb@flush created L0@5 N·1 S·197B "会,v3":"会,v3"
+22:22:21.475351 version@stat F·[2] S·395B[395B] Sc·[0.50]
+22:22:21.549510 db@janitor F·4 G·0
+22:22:21.549612 db@open done T·94.697125ms
+22:22:55.377940 db@close closing
+22:22:55.378057 db@close done T·116.416µs

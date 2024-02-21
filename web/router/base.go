@@ -11,5 +11,7 @@ func InitBaseRouter(group *gin.RouterGroup) {
 		baseRouter.GET("/ping", controller.Welcome)
 		baseRouter.GET("/cut", controller.Cut)
 		baseRouter.POST("/query", controller.Query)
+		baseRouter.GET("/searchRemind", controller.SearchRemind)
+		baseRouter.POST("/initReminder", controller.InitReminder)
 	}
 }

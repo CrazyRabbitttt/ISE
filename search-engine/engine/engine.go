@@ -2,6 +2,7 @@ package engine
 
 import (
 	"Search-Engine/search-engine/model"
+	"Search-Engine/search-engine/reminder"
 	"Search-Engine/search-engine/sort"
 	"Search-Engine/search-engine/storage"
 	"Search-Engine/search-engine/util"
@@ -25,6 +26,7 @@ type Engine struct {
 	RepositoryStorageName string
 	DocumentCnt           int
 	TimeOut               int64 // 超时时间
+	TrieReminder          *reminder.Trie
 
 	mutex sync.Mutex
 	wg    sync.WaitGroup // 用于同步 初始化 和 执行索引操作的 goroutine
@@ -241,7 +243,8 @@ func (e *Engine) Search(request *model.SearchRequest) (*model.SimpleSearchRespon
 	e.AddAttrs2ContextByDocId(searchContext, wg)
 	// 5. AssignScore 赋分数
 	searchContext.AssignScores()
-
+	// 6. 这里对于 query 词加到 Trie 树中，用于关键词提示(todo : 后面需要在启动的时候将一些热搜词直接初始化好)
+	e.TrieReminder.Add(request.Query)
 	response := &model.SimpleSearchResponse{
 		Terms:      terms,
 		Candidates: searchContext.CandidateItems,
@@ -304,4 +307,20 @@ func (e *Engine) GetShardNumByTerm(term string) int {
 	// murmur hash ==> hash code
 	hashCode := util.String2Int(term)
 	return int(hashCode % uint32(e.ShardNum))
+}
+
+func (e *Engine) SearchRemind(query string) ([]string, error) {
+	var res []string
+	nodes := e.TrieReminder.PrefixSearch(query, 10)
+	for _, node := range nodes {
+		res = append(res, node.Data.(string))
+	}
+	return res, nil
+}
+
+func (e *Engine) InitReminder(querys []string) {
+	for index, query := range querys {
+		fmt.Printf("init number [%d] query to Trie Tree\n", index)
+		e.TrieReminder.Add(query)
+	}
 }

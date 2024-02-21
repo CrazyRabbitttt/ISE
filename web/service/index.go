@@ -18,6 +18,5 @@ func NewIndexService() *IndexService {
 func (s *IndexService) AddIndexDoc(doc *model.IndexDoc) error {
 	// 往Engine对应的chan中添加数据
 	s.container.GetEngine().AddIndexDoc2Chan(doc)
-
 	return nil
 }

@@ -25,6 +25,7 @@ type DB struct {
 
 type Web struct {
 	ServerPort int `yaml:"serverPort"`
+	Limit      int `yaml:"limit"`
 }
 
 func InitConfig() {

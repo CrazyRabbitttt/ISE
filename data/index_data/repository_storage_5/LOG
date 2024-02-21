@@ -1,0 +1,53 @@
+=============== Feb 20, 2024 (CST) ===============
+23:17:46.527772 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+23:17:46.585066 db@open opening
+23:17:46.585970 version@stat F·[] S·0B[] Sc·[]
+23:17:46.622435 db@janitor F·2 G·0
+23:17:46.622568 db@open done T·37.388625ms
+23:18:37.936692 db@close closing
+23:18:37.937293 db@close done T·620.458µs
+=============== Feb 21, 2024 (CST) ===============
+22:16:57.803957 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+22:16:57.820327 version@stat F·[] S·0B[] Sc·[]
+22:16:57.820411 db@open opening
+22:16:57.820690 journal@recovery F·1
+22:16:57.820832 journal@recovery recovering @1
+22:16:57.892672 memdb@flush created L0@2 N·1 S·509B "\x00\x00\x04\xd3,v1":"\x00\x00\x04\xd3,v1"
+22:16:57.893067 version@stat F·[1] S·509B[509B] Sc·[0.25]
+22:16:58.007985 db@janitor F·3 G·0
+22:16:58.008034 db@open done T·187.591416ms
+22:17:33.985067 db@close closing
+22:17:33.986253 db@close done T·1.214958ms
+=============== Feb 21, 2024 (CST) ===============
+22:19:34.945318 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+22:19:34.946193 version@stat F·[1] S·509B[509B] Sc·[0.25]
+22:19:34.946232 db@open opening
+22:19:34.946457 journal@recovery F·1
+22:19:34.946581 journal@recovery recovering @3
+22:19:34.965522 version@stat F·[1] S·509B[509B] Sc·[0.25]
+22:19:35.056501 db@janitor F·3 G·0
+22:19:35.056572 db@open done T·110.299666ms
+22:20:09.826631 db@close closing
+22:20:09.826910 db@close done T·272.833µs
+=============== Feb 21, 2024 (CST) ===============
+22:22:10.503961 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+22:22:10.505420 version@stat F·[1] S·509B[509B] Sc·[0.25]
+22:22:10.505470 db@open opening
+22:22:10.505697 journal@recovery F·1
+22:22:10.505815 journal@recovery recovering @5
+22:22:10.506474 version@stat F·[1] S·509B[509B] Sc·[0.25]
+22:22:10.618679 db@janitor F·3 G·0
+22:22:10.618750 db@open done T·113.2655ms
+22:23:15.379444 db@close closing
+22:23:15.381366 db@close done T·2.195166ms
+=============== Feb 21, 2024 (CST) ===============
+22:44:29.341231 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+22:44:29.349575 version@stat F·[1] S·509B[509B] Sc·[0.25]
+22:44:29.349630 db@open opening
+22:44:29.349863 journal@recovery F·1
+22:44:29.350019 journal@recovery recovering @7
+22:44:29.350977 version@stat F·[1] S·509B[509B] Sc·[0.25]
+22:44:29.464367 db@janitor F·3 G·0
+22:44:29.464442 db@open done T·114.794375ms
+22:45:09.085136 db@close closing
+22:45:09.085425 db@close done T·293.25µs

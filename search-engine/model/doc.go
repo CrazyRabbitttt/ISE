@@ -17,3 +17,7 @@ type SearchResponseDoc struct {
 	Docs  []*RepositoryIndexDoc
 	Score int
 }
+
+type InitTrie struct {
+	Querys map[string]interface{} `json:"querys"`
+}

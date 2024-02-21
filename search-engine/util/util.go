@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"encoding/gob"
 	"regexp"
+	"strings"
 )
 
 const (
@@ -138,8 +139,17 @@ func ExistInArrayString(array []string, word string) (int, bool) {
 	return -1, false
 }
 
+// ProcessWord:对于输入的query词，进行标点符号、空白符号的清除
+func ProcessWord(word string) string {
+	str := RemovePunctuation(word)
+	str = strings.ToLower(str)
+	str = RemoveSpace(str)
+	return str
+}
+
 // 计算最长公共子序列的长度
 func CalculateLCS(text1 string, text2 string) int {
+	text1, text2 = ProcessWord(text1), ProcessWord(text2)
 	m, n := len(text1), len(text2)
 	dp := make([][]int, m+1)
 	for i := range dp {
