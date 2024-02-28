@@ -182,3 +182,25 @@
 22:44:29.328587 db@open done T·219.255541ms
 22:45:04.084449 db@close closing
 22:45:04.085628 db@close done T·1.198625ms
+=============== Feb 26, 2024 (CST) ===============
+19:55:53.639978 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+19:55:53.648606 version@stat F·[3 1] S·848B[648B 200B] Sc·[0.75 0.00]
+19:55:53.648678 db@open opening
+19:55:53.649034 journal@recovery F·1
+19:55:53.649513 journal@recovery recovering @36
+19:55:53.658330 version@stat F·[3 1] S·848B[648B 200B] Sc·[0.75 0.00]
+19:55:53.813458 db@janitor F·6 G·0
+19:55:53.831005 db@open done T·182.310375ms
+19:56:28.638219 db@close closing
+19:56:28.639333 db@close done T·1.122291ms
+=============== Feb 26, 2024 (CST) ===============
+20:00:05.321577 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:00:05.323674 version@stat F·[3 1] S·848B[648B 200B] Sc·[0.75 0.00]
+20:00:05.323731 db@open opening
+20:00:05.323982 journal@recovery F·1
+20:00:05.326168 journal@recovery recovering @38
+20:00:05.329873 version@stat F·[3 1] S·848B[648B 200B] Sc·[0.75 0.00]
+20:00:05.444683 db@janitor F·6 G·0
+20:00:05.461035 db@open done T·137.277584ms
+20:00:40.320962 db@close closing
+20:00:40.321904 db@close done T·944.792µs

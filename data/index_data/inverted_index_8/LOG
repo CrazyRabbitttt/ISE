@@ -30,3 +30,14 @@
 22:22:21.549612 db@open done T·94.697125ms
 22:22:55.377940 db@close closing
 22:22:55.378057 db@close done T·116.416µs
+=============== Feb 26, 2024 (CST) ===============
+20:03:42.771788 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:03:42.782405 version@stat F·[2] S·395B[395B] Sc·[0.50]
+20:03:42.782464 db@open opening
+20:03:42.782759 journal@recovery F·1
+20:03:42.784079 journal@recovery recovering @6
+20:03:42.786192 version@stat F·[2] S·395B[395B] Sc·[0.50]
+20:03:42.901272 db@janitor F·4 G·0
+20:03:42.901370 db@open done T·118.885041ms
+20:04:15.359232 db@close closing
+20:04:15.361090 db@close done T·1.928625ms

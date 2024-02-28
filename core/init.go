@@ -21,6 +21,5 @@ func Initialize() {
 	// 初始化路由
 	r := router.InitRouter()
 	// 将一些测试用的query词加到 Trie 树中去
-
 	r.Run()
 }

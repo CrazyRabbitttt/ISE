@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beautiful Search Box</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 更改为上对齐 */
+            min-height: 100vh; /* 更改为最小高度 */
+            background-image: url('../data/background.JPG'); /* 默认背景图片 */
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.5s ease;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            margin-top: 250px; /* 调整上边距 */
+        }
+
+        .logo {
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.8); /* 更改为半透明背景 */
+            border-radius: 30px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+        }
+
+        .search-box input[type="text"] {
+            border: none;
+            outline: none;
+            font-size: 16px;
+            padding: 10px;
+            border-radius: 20px;
+            width: 200px;
+        }
+
+        .search-box button {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            outline: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+
+        /* 搜索提示词 */
+        .suggestions-container {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+            z-index: 1;
+        }
+
+        .suggestion {
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .suggestion:hover {
+            background-color: #f0f0f0;
+        }
+
+        .suggestion.highlighted {
+            background-color: #f0f0f0;
+        }
+
+        .separator {
+            border-top: 1px solid #ddd;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- <div class="logo">
+            <img src="../Gin-Web/static/imgs/avator/avator.JPG" alt="Logo" width="100">
+        </div> -->
+        <div class="search-box">
+            <input type="text" id="queryInput" placeholder="Enter your query...">
+            <button id="searchButton">Search</button>
+        </div>
+        <div class="suggestions-container" id="searchRemindContainer"></div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById("queryInput");
+        const suggestionsDiv = document.getElementById("searchRemindContainer");
+        let selectedIndex = -1;
+
+        searchInput.addEventListener('input', function(event){
+            const query = event.target.value.trim();
+
+            if (query !== '') {
+                fetch(`http://localhost:8080/api/searchRemind?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.data && data.data.length > 0) {
+                        displaySuggestions(data.data);
+                    } else {
+                        clearSuggestions();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching suggestions:', error)
+                    clearSuggestions();
+                });
+            } else {
+                clearSuggestions();
+            }
+        });
+
+        searchInput.addEventListener('keydown', function(event) {
+            const suggestions = suggestionsDiv.querySelectorAll('.suggestion');
+            const suggestionCount = suggestions.length;
+
+            if (suggestionCount > 0) {
+                if (event.key == 'ArrowDown') {
+                    event.preventDefault();
+                    selectedIndex = Math.min(selectedIndex + 1, suggestionCount - 1);
+                } else if (event.key == 'ArrowUp') {
+                    event.preventDefault();
+                    selectedIndex = Math.min(selectedIndex - 1, -1);
+                } else if (event.key == 'Enter') {
+                    event.preventDefault();
+                    if (selectedIndex >= 0 && selectedIndex < suggestionCount) {
+                        searchInput.value = suggestions[selectedIndex].textContent;
+                        clearSuggestions();        
+                    }
+                }
+                highlightSuggestion();
+            }
+        })
+        
+        function clearSuggestions() {
+            suggestionsDiv.innerHTML = '';
+            suggestionsDiv.style.display = 'none';
+        }
+
+        function highlightSuggestion() {
+            const suggestions = suggestionsDiv.querySelectorAll('.suggestion');
+            suggestions.forEach((suggestion, index) => {
+                if (index === selectedIndex) {
+                    suggestion.classList.add('highlighted');
+                } else {
+                    suggestion.classList.remove('highlighted');
+                }
+            });
+        }
+
+        function displaySuggestions(suggestions) {
+            suggestionsDiv.innerHTML = '';
+            selectedIndex = -1;
+
+            suggestions.forEach(suggestion => {
+                const suggestionElement = document.createElement('div');
+                suggestionElement.classList.add('suggestion');
+                suggestionElement.textContent = suggestion;
+                suggestionElement.addEventListener('click', function(){
+                    searchInput.value = suggestion;
+                    clearSuggestions();
+                });
+                suggestionsDiv.appendChild(suggestionElement);
+            });
+
+            suggestionsDiv.style.display = 'block';
+        }
+
+        document.getElementById("searchButton").addEventListener("click", function() {
+            var query = document.getElementById("queryInput").value;
+
+            var QueryData = {
+                query: query,
+                limit: 10,
+            };
+
+            // 发送POST请求
+            fetch('http://localhost:8080/api/query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(QueryData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 处理QueryResponse, 处理成功就跳转到对应的搜索界面
+                if (data.state == 200) {
+                    var searchResultsJson = JSON.stringify(data.data.candidates);
+                    window.location.href = './search-result.html?results=' + encodeURIComponent(searchResultsJson);
+                } else {
+                    alert("搜索失败，请重新尝试!")
+                }
+            })
+            // 在这里添加发送搜索请求的逻辑
+            console.log("Searching for: " + query);
+        });
+    </script>
+</body>
+</html>
+
+
