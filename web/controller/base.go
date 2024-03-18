@@ -14,14 +14,12 @@ func Welcome(c *gin.Context) {
 }
 
 func Query(c *gin.Context) {
-	fmt.Println("In controller function: query.....")
 	queryRequest := &model.SearchRequest{}
 	if err := c.ShouldBind(&queryRequest); err != nil {
-		fmt.Println("解析Request请求结构失败,")
 		c.JSON(http.StatusBadRequest, ResponseErrWithMessage("解析Http请求到结构体(SearchRequest)失败"))
 		return
 	}
-	fmt.Println("解析Request请求结构成功, q:", queryRequest.Query, "limit:", queryRequest.Limit)
+	//fmt.Println("解析Request请求结构成功, q:", queryRequest.Query, "limit:", queryRequest.Limit)
 	response, err := service.GlobalService.BaseService.Query(queryRequest)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ResponseErrWithMessage("查询出现异常"))

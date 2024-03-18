@@ -10,6 +10,7 @@ func InitRouter() *gin.Engine {
 
 	//engine.Use()
 	engine.Use(middleware.CorsFunc)
+	//engine.Use(middleware.LogHttpRequest)
 	group := engine.Group("/api")
 	{
 		InitBaseRouter(group)
