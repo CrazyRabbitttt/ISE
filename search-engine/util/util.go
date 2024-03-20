@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/gob"
+	"github.com/lithammer/shortuuid/v4"
 	"regexp"
 	"strings"
 )
@@ -61,6 +62,11 @@ func Murmur3(key []byte) (hash uint32) {
 
 	// 出发吧，狗嬷嬷！
 	return
+}
+
+// 用于生成唯一ID
+func GenUuid() string {
+	return shortuuid.New()
 }
 
 func RemovePunctuation(word string) string {

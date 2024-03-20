@@ -75,7 +75,6 @@ func (engine *Engine) Init() {
 func (engine *Engine) AddIndexDocLoop(worker chan *model.IndexDoc) {
 	for {
 		indexDoc := <-worker // 试图从channel中读取待添加的Doc，没有的话就阻塞在这里
-		fmt.Println("成功添加IndexDoc到Channel中, docId:", indexDoc.Key, "text", indexDoc.Text, "attrs", indexDoc.Attrs)
 		engine.AddIndexDoc2Engine(indexDoc)
 	}
 }
@@ -112,7 +111,7 @@ func (e *Engine) AddIndexDoc2Engine(indexDoc *model.IndexDoc) {
 				也会将value给替换掉。
 	*/
 	terms2bRemoved, terms2bInserted := e.PrepareForHandle(terms, docId) // 内置了对于DB的handle， 需要进行加锁🔒
-	fmt.Printf("The len of remove:%d, the len of insert:%d", len(terms2bRemoved), len(terms2bInserted))
+	//fmt.Printf("The len of remove:%d, the len of insert:%d", len(terms2bRemoved), len(terms2bInserted))
 	// 倒排索引：删除索引
 	for _, value := range terms2bRemoved {
 		e.RemoveDocIdInInvertIndex(value, docId)
@@ -130,7 +129,8 @@ func (e *Engine) AddIndexDoc2PositiveIndex(indexDoc *model.IndexDoc, terms []str
 	e.mutex.Lock()
 	defer e.mutex.Unlock()
 
-	index := e.GetShardNumByDocId(indexDoc.Key)
+	docId := indexDoc.Key
+	index := e.GetShardNumByDocId(docId)
 	positiveIndex := e.PositiveIndexStorage[index]
 	reposIndex := e.RepositoryStorage[index]
 
@@ -140,9 +140,9 @@ func (e *Engine) AddIndexDoc2PositiveIndex(indexDoc *model.IndexDoc, terms []str
 	}
 
 	// id ===> [terms]
-	positiveIndex.Set(util.Uint32ToBytes(indexDoc.Key), util.Encoder(terms))
+	positiveIndex.Set(util.Uint32ToBytes(docId), util.Encoder(terms))
 	// id ===> [terms + attrs]
-	reposIndex.Set(util.Uint32ToBytes(indexDoc.Key), util.Encoder(repos))
+	reposIndex.Set(util.Uint32ToBytes(docId), util.Encoder(repos))
 }
 
 func (e *Engine) PrepareForHandle(terms []string, docId uint32) ([]string, []string) {
@@ -188,13 +188,13 @@ func (e *Engine) AddDocIdInInvertIndex(term string, docId uint32) {
 	buf, exist := invertIndex.Get([]byte(term))
 	if !exist {
 		docIdList = append(docIdList, docId)
-		fmt.Println("AddInvertIndex function, 没有%s构建的倒排索引", term)
+		fmt.Printf("AddInvertIndex function, 没有%s构建的倒排索引\n", term)
 	} else {
 		util.Decoder(buf, &docIdList)
 		if _, exist := util.ExistInArrayUint32(docIdList, docId); !exist {
 			docIdList = append(docIdList, docId)
 		}
-		fmt.Println("AddInvertIndex function, 将%d添加到%s对应的倒排拉链中", docId, term)
+		fmt.Printf("AddInvertIndex function, 将%d添加到%s对应的倒排拉链中\n", docId, term)
 	}
 	// 将更新后的 docIdList 设置到 db 中
 	invertIndex.Set([]byte(term), util.Encoder(docIdList))
@@ -265,7 +265,7 @@ func (e *Engine) AddDocIdList2ContextByTerm(term string, context *sort.SearchCon
 }
 
 func (e *Engine) AddAttrs2ContextByDocId(context *sort.SearchContext, wg *sync.WaitGroup) {
-	// 获得 docId 对应的文档库，拿到一些特征（例如Title）
+	// 获得 docId 对应的文档库，拿到一些特征（例如Title、URL、作者、文档的描述等等）
 	// 这里可以开启多个 goroutine 同时获取 doc 对应的特征
 	wg.Add(len(context.CandidateItems))
 	for i, item := range context.CandidateItems {
@@ -290,6 +290,13 @@ func (e *Engine) GetAttrsFromStorageByDocId(docId uint32, candidateItem *model.C
 		util.Decoder(buf, &repos)
 		attrs := repos.Attrs
 		titleInterface := attrs["title"]
+		urlInterface := attrs["page_url"]
+		if pageUrl, ok := urlInterface.(string); ok {
+			candidateItem.URL = pageUrl
+			fmt.Printf("Assign url, docId:%d, url:%s\n", candidateItem.Id, candidateItem.URL)
+		} else {
+			fmt.Printf("There is no url in attrs, docId:%d\n", candidateItem.Id)
+		}
 		if title, ok := titleInterface.(string); ok {
 			candidateItem.Title = title
 			fmt.Printf("Assign title, docId:%d, title:%s\n", candidateItem.Id, candidateItem.Title)
@@ -301,6 +308,11 @@ func (e *Engine) GetAttrsFromStorageByDocId(docId uint32, candidateItem *model.C
 
 func (e *Engine) GetShardNumByDocId(docId uint32) int {
 	return int(docId % uint32(e.ShardNum))
+}
+
+func (e *Engine) GetShardNumByDocIdStr(docId string) int {
+	hashCode := util.String2Int(docId)
+	return int(hashCode % uint32(e.ShardNum))
 }
 
 func (e *Engine) GetShardNumByTerm(term string) int {
