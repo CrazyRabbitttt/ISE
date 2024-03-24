@@ -4,6 +4,7 @@ import (
 	"Search-Engine/search-engine/model"
 	"Search-Engine/search-engine/util"
 	"fmt"
+	"math"
 	"sync"
 )
 
@@ -61,4 +62,40 @@ func (s *SearchContext) AssignScores() {
 		s.CandidateItems[index].Score += float64(lcsLen)
 		s.CandidateItems[index].Score += float64(item.Frequency)
 	}
+}
+
+// 对于待选结果集合进行去重，
+func (s *SearchContext) DeduplicateResults() {
+	candidate2bdeleted := make(map[int]struct{}) // 将重复的数据的下标放进来
+	for i, v := range s.CandidateItems {
+		// 这是已经被判断为重复的界面
+		if _, exist := candidate2bdeleted[i]; exist {
+			continue
+		}
+		lenx := len(v.Title)
+		for j := i + 1; j < len(s.CandidateItems); j++ {
+			if _, exist := candidate2bdeleted[j]; exist {
+				continue
+			}
+			leny := len(s.CandidateItems[j].Title)
+			abs := math.Abs(float64(lenx - leny))
+			maxLen := math.Max(float64(lenx), float64(leny))
+			// 长度差距过大，直接放过
+			if abs/maxLen > 0.3 {
+				continue
+			}
+			if float64(util.CalculateLCS(v.Title, s.CandidateItems[j].Title))/maxLen > 0.8 {
+				candidate2bdeleted[j] = struct{}{}
+			}
+		}
+	}
+	var newCandidateItems []model.CandidateItem
+	for i, v := range s.CandidateItems {
+		if _, exist := candidate2bdeleted[i]; exist {
+			continue
+		}
+		newCandidateItems = append(newCandidateItems, v)
+	}
+	fmt.Printf("进行了最终候选集中相似内容的去重，before:%d, after:%d\n", len(s.CandidateItems), len(newCandidateItems))
+	s.CandidateItems = newCandidateItems
 }

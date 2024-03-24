@@ -28,6 +28,9 @@ class CrawlerItem(scrapy.Item):
         generated_term_list = self['description'] + self['keywords']
         generated_term_list.append(self['title'])
         generated_term = ' '.join(generated_term_list)
+
+        description_in_one = ' '.join(self['description'])
+        keywords_in_one = ' '.join(self['keywords'])
         
         print("generated term is:", generated_term, " page url is:", self['page_url'])
         # data['key'] =    ==> 生成的文档的唯一key值由 pipeline 中的函数来维护
@@ -36,12 +39,15 @@ class CrawlerItem(scrapy.Item):
         if 'attrs' not in data:
             data['attrs'] = {}
         
-        # data['attrs']['urls'] = self['urls']
         data['attrs']['title'] = self['title']
-        data['attrs']['keywords'] = self['keywords']
-        data['attrs']['description'] = self['description']
-        # data['attrs']['publish_time'] = self['publish_time']
         data['attrs']['page_url'] = self['page_url']
+        data['attrs']['keywords'] = keywords_in_one
+        data['attrs']['description'] = description_in_one
+        # data['attrs']['urls'] = self['urls']
+        # data['attrs']['keywords'] = self['keywords']
+        # data['attrs']['description'] = self['description']
+        # data['attrs']['publish_time'] = self['publish_time']
+        
         return data
         
 

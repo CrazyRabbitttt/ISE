@@ -58,3 +58,73 @@
 09:50:51.503496 db@open done T·172.491ms
 09:51:26.594226 db@close closing
 09:51:26.594723 db@close done T·496.083µs
+=============== Mar 24, 2024 (CST) ===============
+10:08:00.306768 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+10:08:00.314931 version@stat F·[2 1] S·280KiB[270KiB 9KiB] Sc·[0.50 0.00]
+10:08:00.315001 db@open opening
+10:08:00.315271 journal@recovery F·1
+10:08:00.315384 journal@recovery recovering @13
+10:08:00.316171 version@stat F·[2 1] S·280KiB[270KiB 9KiB] Sc·[0.50 0.00]
+10:08:00.373325 db@janitor F·5 G·0
+10:08:00.373421 db@open done T·58.377541ms
+10:08:16.211811 table@compaction L0·2 -> L1·1 S·280KiB Q·3279
+10:08:16.252883 table@build created L1@17 N·695 S·26KiB "01336,v1104":"，,v3032"
+10:08:16.253920 version@stat F·[0 1] S·26KiB[0B 26KiB] Sc·[0.00 0.00]
+10:08:16.307911 table@compaction committed F-2 S-253KiB Ke·0 D·1720 T·96.020042ms
+10:08:16.308277 table@remove removed @12
+10:08:16.308586 table@remove removed @9
+10:08:16.309454 table@remove removed @8
+10:10:05.107540 db@close closing
+10:10:05.109564 db@close done T·2.021583ms
+=============== Mar 24, 2024 (CST) ===============
+10:21:50.827452 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+10:21:50.828704 version@stat F·[0 1] S·26KiB[0B 26KiB] Sc·[0.00 0.00]
+10:21:50.828750 db@open opening
+10:21:50.828953 journal@recovery F·1
+10:21:50.829070 journal@recovery recovering @15
+10:21:50.872633 memdb@flush created L0@18 N·2629 S·1MiB "1977,v5293":"，,v3039"
+10:21:50.873020 version@stat F·[1 1] S·1MiB[1MiB 26KiB] Sc·[0.25 0.00]
+10:21:50.946832 db@janitor F·4 G·0
+10:21:50.946889 db@open done T·118.123208ms
+10:22:22.948058 db@close closing
+10:22:22.948581 db@close done T·526.625µs
+=============== Mar 24, 2024 (CST) ===============
+11:49:36.682670 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:49:36.693858 version@stat F·[1 1] S·1MiB[1MiB 26KiB] Sc·[0.25 0.00]
+11:49:36.693971 db@open opening
+11:49:36.694422 journal@recovery F·1
+11:49:36.694611 journal@recovery recovering @19
+11:49:36.696082 version@stat F·[1 1] S·1MiB[1MiB 26KiB] Sc·[0.25 0.00]
+11:49:36.737922 db@janitor F·4 G·0
+11:49:36.738020 db@open done T·44.021292ms
+11:50:16.776112 table@compaction L0·1 -> L1·1 S·1MiB Q·6220
+11:50:16.835164 table@build created L1@23 N·1058 S·45KiB "01336,v1104":"，,v5659"
+11:50:16.835233 version@stat F·[0 1] S·45KiB[0B 45KiB] Sc·[0.00 0.00]
+11:50:16.870088 table@compaction committed F-1 S-1MiB Ke·0 D·2266 T·93.884541ms
+11:50:16.870483 table@remove removed @18
+11:50:16.870720 table@remove removed @17
+11:54:49.570382 db@close closing
+11:54:49.571379 db@close done T·999.875µs
+=============== Mar 24, 2024 (CST) ===============
+11:55:21.036688 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:55:21.039504 version@stat F·[0 1] S·45KiB[0B 45KiB] Sc·[0.00 0.00]
+11:55:21.039623 db@open opening
+11:55:21.040032 journal@recovery F·1
+11:55:21.040388 journal@recovery recovering @21
+11:55:21.083453 memdb@flush created L0@24 N·1305 S·936KiB "007639,v5945":"，,v5669"
+11:55:21.084142 version@stat F·[1 1] S·981KiB[936KiB 45KiB] Sc·[0.25 0.00]
+11:55:21.159957 db@janitor F·4 G·0
+11:55:21.160048 db@open done T·120.400917ms
+11:56:14.592144 db@close closing
+11:56:14.592372 db@close done T·234.292µs
+=============== Mar 24, 2024 (CST) ===============
+15:42:45.558354 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:42:45.561190 version@stat F·[1 1] S·981KiB[936KiB 45KiB] Sc·[0.25 0.00]
+15:42:45.561257 db@open opening
+15:42:45.561483 journal@recovery F·1
+15:42:45.562080 journal@recovery recovering @25
+15:42:45.564813 version@stat F·[1 1] S·981KiB[936KiB 45KiB] Sc·[0.25 0.00]
+15:42:45.641591 db@janitor F·4 G·0
+15:42:45.641663 db@open done T·80.385083ms
+15:43:19.157452 db@close closing
+15:43:19.157818 db@close done T·353.959µs

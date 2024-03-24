@@ -268,7 +268,7 @@ func (e *Engine) Search(request *model.SearchRequest) (*model.SimpleSearchRespon
 	}
 	wg.Wait() // 等待多线程完成对于不同分片的 候选集 的添加
 	fmt.Println(searchContext.CandidateDocIds)
-	// 3. Preprocessing 预处理数据, 获得待选集doc命中的term数量
+	// 3. Preprocessing 预处理数据, 获得待选集doc命中的term数量，进行初始的赋值
 	searchContext.PreProcess()
 	// 4. 拿到 docId 对应的一些特征，这里其实类似于查询 正排索引 这一步, 将候选集的特征进行 Enrich
 	e.AddAttrs2ContextByDocId(searchContext, wg)
@@ -276,21 +276,26 @@ func (e *Engine) Search(request *model.SearchRequest) (*model.SimpleSearchRespon
 	searchContext.AssignScores()
 	// 6. 排序
 	stdsort.Sort(model.CandidateItemSlice(searchContext.CandidateItems))
-	// 7.再次进行截断
-	if len(searchContext.CandidateItems) > 25 {
-		fmt.Printf("最终排序后进行截断, before:%d, after:25\n", len(searchContext.CandidateItems))
-		searchContext.CandidateItems = searchContext.CandidateItems[:25]
+	// 7.去重，因为结果集当中绝对是有重复的
+	searchContext.DeduplicateResults()
+	// 8.再次进行截断
+	if len(searchContext.CandidateItems) > 10 {
+		fmt.Printf("最终排序后进行截断, before:%d, after:10\n", len(searchContext.CandidateItems))
+		searchContext.CandidateItems = searchContext.CandidateItems[:10]
 	}
-	// 6. 这里对于 query 词加到 Trie 树中，用于关键词提示(todo : 后面需要在启动的时候将一些热搜词直接初始化好)
+	// 9. 这里对于 query 词加到 Trie 树中，用于关键词提示(todo : 后面需要在启动的时候将一些热搜词直接初始化好)
 	e.TrieReminder.Add(request.Query)
 	response := &model.SimpleSearchResponse{
 		Terms:      terms,
+		Query:      request.Query,
 		Candidates: searchContext.CandidateItems,
 	}
 	return response, nil
 }
 
 func (e *Engine) AddDocIdList2ContextByTerm(term string, context *sort.SearchContext, wg *sync.WaitGroup) {
+	e.mutex.Lock()
+	defer e.mutex.Unlock()
 	defer wg.Done()
 	index := e.GetShardNumByTerm(term)
 	invertIndex := e.InvertedIndexStorage[index]
@@ -338,7 +343,7 @@ func (e *Engine) AddAttrs2ContextByDocId(context *sort.SearchContext, wg *sync.W
 // GetAttrsFromStorageByDocId 函数获取 doc 对应的文档，从中取出来特征并且赋值给传入的 候选集 的字段中
 func (e *Engine) GetAttrsFromStorageByDocId(docId int64, candidateItem *model.CandidateItem, wg *sync.WaitGroup) {
 	e.mutex.Lock()
-	e.mutex.Unlock()
+	defer e.mutex.Unlock()
 	defer wg.Done()
 
 	shardIndex := e.GetShardNumByDocId(docId)

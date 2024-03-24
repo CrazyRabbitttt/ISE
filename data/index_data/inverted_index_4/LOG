@@ -69,3 +69,51 @@
 09:50:51.503171 db@open done T·172.165542ms
 09:51:26.594269 db@close closing
 09:51:26.594723 db@close done T·449.417µs
+=============== Mar 24, 2024 (CST) ===============
+10:08:00.760168 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+10:08:00.781788 version@stat F·[2 1] S·192KiB[180KiB 11KiB] Sc·[0.50 0.00]
+10:08:00.795614 db@open opening
+10:08:00.795917 journal@recovery F·1
+10:08:00.796048 journal@recovery recovering @15
+10:08:00.797200 version@stat F·[2 1] S·192KiB[180KiB 11KiB] Sc·[0.50 0.00]
+10:08:00.847163 db@janitor F·5 G·0
+10:08:00.847226 db@open done T·51.581166ms
+10:08:16.210843 table@compaction L0·2 -> L1·1 S·192KiB Q·3148
+10:08:16.235037 table@build created L1@19 N·695 S·25KiB "000810,v1990":"？,v2875"
+10:08:16.235580 version@stat F·[0 1] S·25KiB[0B 25KiB] Sc·[0.00 0.00]
+10:08:16.290866 table@compaction committed F-2 S-166KiB Ke·0 D·1391 T·79.959834ms
+10:08:16.307945 table@remove removed @14
+10:08:16.308462 table@remove removed @11
+10:08:16.309309 table@remove removed @10
+10:10:05.107767 db@close closing
+10:10:05.110736 db@close done T·2.968166ms
+=============== Mar 24, 2024 (CST) ===============
+11:49:36.860907 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:49:36.869063 version@stat F·[0 1] S·25KiB[0B 25KiB] Sc·[0.00 0.00]
+11:49:36.869154 db@open opening
+11:49:36.869475 journal@recovery F·1
+11:49:36.869663 journal@recovery recovering @17
+11:49:36.914706 memdb@flush created L0@20 N·2274 S·994KiB "12306,v5082":"？,v3143"
+11:49:36.915173 version@stat F·[1 1] S·1020KiB[994KiB 25KiB] Sc·[0.25 0.00]
+11:49:36.988703 db@janitor F·4 G·0
+11:49:36.988761 db@open done T·119.588875ms
+11:50:16.395543 table@compaction L0·1 -> L1·1 S·1020KiB Q·5724
+11:50:16.415870 table@build created L1@23 N·1066 S·43KiB "000810,v1990":"？,v5176"
+11:50:16.415965 version@stat F·[0 1] S·43KiB[0B 43KiB] Sc·[0.00 0.00]
+11:50:16.450866 table@compaction committed F-1 S-976KiB Ke·0 D·1903 T·55.268709ms
+11:50:16.451217 table@remove removed @20
+11:50:16.451441 table@remove removed @19
+11:54:04.527203 db@close closing
+11:54:04.529142 db@close done T·1.94ms
+=============== Mar 24, 2024 (CST) ===============
+11:54:09.049890 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:54:09.050655 version@stat F·[0 1] S·43KiB[0B 43KiB] Sc·[0.00 0.00]
+11:54:09.050712 db@open opening
+11:54:09.050920 journal@recovery F·1
+11:54:09.051045 journal@recovery recovering @21
+11:54:09.094166 memdb@flush created L0@24 N·1094 S·743KiB "018969,v5529":"？,v5676"
+11:54:09.094963 version@stat F·[1 1] S·786KiB[743KiB 43KiB] Sc·[0.25 0.00]
+11:54:09.153192 db@janitor F·4 G·0
+11:54:09.153283 db@open done T·102.514834ms
+11:54:49.570317 db@close closing
+11:54:49.570955 db@close done T·638.417µs

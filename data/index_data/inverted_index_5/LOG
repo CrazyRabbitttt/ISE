@@ -100,3 +100,50 @@
 09:49:53.933455 db@open done T·85.7215ms
 09:50:26.586454 db@close closing
 09:50:26.587012 db@close done T·556.292µs
+=============== Mar 24, 2024 (CST) ===============
+10:08:01.933352 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+10:08:01.935773 version@stat F·[2 1] S·82KiB[72KiB 9KiB] Sc·[0.50 0.00]
+10:08:01.935837 db@open opening
+10:08:01.936074 journal@recovery F·1
+10:08:01.936198 journal@recovery recovering @21
+10:08:01.937215 version@stat F·[2 1] S·82KiB[72KiB 9KiB] Sc·[0.50 0.00]
+10:08:01.992746 db@janitor F·5 G·0
+10:08:01.992812 db@open done T·56.956666ms
+10:08:16.547778 table@compaction L0·2 -> L1·1 S·82KiB Q·2642
+10:08:16.568846 table@build created L1@25 N·704 S·23KiB "040002,v2027":"龙,v138"
+10:08:16.568893 version@stat F·[0 1] S·23KiB[0B 23KiB] Sc·[0.00 0.00]
+10:08:16.587067 table@compaction committed F-2 S-58KiB Ke·0 D·1360 T·39.240333ms
+10:08:16.587576 table@remove removed @18
+10:08:16.587785 table@remove removed @15
+10:08:16.588013 table@remove removed @14
+10:10:05.107726 db@close closing
+10:10:05.110397 db@close done T·2.669ms
+=============== Mar 24, 2024 (CST) ===============
+10:37:58.677560 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+10:37:58.680029 version@stat F·[0 1] S·23KiB[0B 23KiB] Sc·[0.00 0.00]
+10:37:58.680101 db@open opening
+10:37:58.680345 journal@recovery F·1
+10:37:58.680761 journal@recovery recovering @23
+10:37:58.711536 memdb@flush created L0@26 N·2133 S·151KiB "10,v4170":"크,v4387"
+10:37:58.712449 version@stat F·[1 1] S·174KiB[151KiB 23KiB] Sc·[0.25 0.00]
+10:37:58.790785 db@janitor F·4 G·0
+10:37:58.790840 db@open done T·110.720916ms
+10:38:33.117059 db@close closing
+10:38:33.117416 db@close done T·356.709µs
+=============== Mar 24, 2024 (CST) ===============
+11:49:38.340832 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:49:38.345841 version@stat F·[1 1] S·174KiB[151KiB 23KiB] Sc·[0.25 0.00]
+11:49:38.345965 db@open opening
+11:49:38.346453 journal@recovery F·1
+11:49:38.346585 journal@recovery recovering @27
+11:49:38.347871 version@stat F·[1 1] S·174KiB[151KiB 23KiB] Sc·[0.25 0.00]
+11:49:38.404491 db@janitor F·4 G·0
+11:49:38.404565 db@open done T·58.565291ms
+11:50:16.773873 table@compaction L0·1 -> L1·1 S·174KiB Q·5044
+11:50:16.781919 table@build created L1@31 N·1080 S·40KiB "040002,v2027":"크,v4387"
+11:50:16.782022 version@stat F·[0 1] S·40KiB[0B 40KiB] Sc·[0.00 0.00]
+11:50:16.817119 table@compaction committed F-1 S-134KiB Ke·0 D·1757 T·43.104542ms
+11:50:16.835141 table@remove removed @26
+11:50:16.835875 table@remove removed @25
+11:54:39.565329 db@close closing
+11:54:39.566482 db@close done T·1.195875ms

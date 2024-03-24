@@ -14,5 +14,6 @@ type SearchResponse struct {
 
 type SimpleSearchResponse struct {
 	Terms      []string        `json:"terms"`
+	Query      string          `json:"query"` // 将查询词也传递过去
 	Candidates []CandidateItem `json:"candidates"`
 }
