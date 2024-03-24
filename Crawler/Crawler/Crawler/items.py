@@ -16,7 +16,7 @@ class CrawlerItem(scrapy.Item):
     urls = scrapy.Field() # 文档中包含的外部链接
 
     def gen_http_body(self):
-        print("begin of get http body function...")
+        print("generate http body")
         data = {}
         # generated_terms = self['title'] + self['description'] + self['keywords']
         # term_list = self['title'] + self['description'] + self['keywords']
@@ -29,7 +29,7 @@ class CrawlerItem(scrapy.Item):
         generated_term_list.append(self['title'])
         generated_term = ' '.join(generated_term_list)
         
-        print("generated term is:", generated_term)
+        print("generated term is:", generated_term, " page url is:", self['page_url'])
         # data['key'] =    ==> 生成的文档的唯一key值由 pipeline 中的函数来维护
         data['terms'] = generated_term
         # 填充用于排序、结果展示的 attrs
@@ -38,10 +38,10 @@ class CrawlerItem(scrapy.Item):
         
         # data['attrs']['urls'] = self['urls']
         data['attrs']['title'] = self['title']
-        # data['attrs']['keywords'] = self['keywords']
-        # data['attrs']['description'] = self['description']
+        data['attrs']['keywords'] = self['keywords']
+        data['attrs']['description'] = self['description']
         # data['attrs']['publish_time'] = self['publish_time']
-        # data['attrs']['page_url'] = self['page_url']
+        data['attrs']['page_url'] = self['page_url']
         return data
         
 

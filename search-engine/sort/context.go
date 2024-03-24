@@ -11,7 +11,7 @@ import (
 type SearchContext struct {
 	mutex           sync.Mutex            // 多个 goroutine 在进行候选集添加的时候保护
 	Query           string                // query语句，后续用于同标题计算最大公共子序列的长度
-	CandidateDocIds []uint32              `json:"candidateDocIds"` // 待选docId的数据集合
+	CandidateDocIds []int64               `json:"candidateDocIds"` // 待选docId的数据集合
 	CandidateItems  []model.CandidateItem // 候选集合的Item(Id & score)
 }
 
@@ -20,7 +20,7 @@ func (c *SearchContext) DebugContext() {
 		len(c.CandidateItems), c.CandidateItems[0].Id, c.CandidateItems[0].Score, c.CandidateItems[0].Title)
 }
 
-func (s *SearchContext) AddCandidate(docIdList *[]uint32) {
+func (s *SearchContext) AddCandidate(docIdList *[]int64) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -30,7 +30,7 @@ func (s *SearchContext) AddCandidate(docIdList *[]uint32) {
 func (s *SearchContext) PreProcess() {
 	// 对于排序阶段的预先处理，例如计算 doc 中的词频出现量
 	// 计算 docIdList 中每个id的重复次数，重复的doc越多说明对应doc中命中的term数量就越多
-	hashSet := make(map[uint32]struct{})
+	hashSet := make(map[int64]struct{})
 	for _, docId := range s.CandidateDocIds {
 		itemsCnt := len(s.CandidateItems)
 		_, exist := hashSet[docId]

@@ -8,6 +8,7 @@ import (
 	"Search-Engine/search-engine/util"
 	tokenizer2 "Search-Engine/search-engine/words/tokenizer"
 	"fmt"
+	stdsort "sort"
 	"sync"
 )
 
@@ -111,7 +112,7 @@ func (e *Engine) AddIndexDoc2Engine(indexDoc *model.IndexDoc) {
 				也会将value给替换掉。
 	*/
 	terms2bRemoved, terms2bInserted := e.PrepareForHandle(terms, docId) // 内置了对于DB的handle， 需要进行加锁🔒
-	//fmt.Printf("The len of remove:%d, the len of insert:%d", len(terms2bRemoved), len(terms2bInserted))
+	fmt.Printf("添加索引，到倒排索引中需要删除的 terms 的长度:%d, 倒排索引中需要添加的 terms 的长度:%d\n", len(terms2bRemoved), len(terms2bInserted))
 	// 倒排索引：删除索引
 	for _, value := range terms2bRemoved {
 		e.RemoveDocIdInInvertIndex(value, docId)
@@ -120,7 +121,6 @@ func (e *Engine) AddIndexDoc2Engine(indexDoc *model.IndexDoc) {
 	for _, value := range terms2bInserted {
 		e.AddDocIdInInvertIndex(value, docId)
 	}
-
 	// 更新正排索引
 	e.AddIndexDoc2PositiveIndex(indexDoc, terms)
 }
@@ -131,6 +131,7 @@ func (e *Engine) AddIndexDoc2PositiveIndex(indexDoc *model.IndexDoc, terms []str
 
 	docId := indexDoc.Key
 	index := e.GetShardNumByDocId(docId)
+	fmt.Printf("更新正排索引, docId:%d, 对应的索引下标:%d, ", docId, index)
 	positiveIndex := e.PositiveIndexStorage[index]
 	reposIndex := e.RepositoryStorage[index]
 
@@ -138,26 +139,48 @@ func (e *Engine) AddIndexDoc2PositiveIndex(indexDoc *model.IndexDoc, terms []str
 		IndexDoc: indexDoc,
 		Terms:    terms,
 	}
+	fmt.Printf("Before handle it in index, data: %T\n", terms)
 
 	// id ===> [terms]
-	positiveIndex.Set(util.Uint32ToBytes(docId), util.Encoder(terms))
+	buf1, err := util.Encoder(terms)
+	if err != nil {
+		fmt.Printf("when encode terms, occur Error:%v\n", err)
+	} else {
+		fmt.Printf("执行了 positive encode, 但是正常\n")
+	}
+	positiveIndex.Set(util.Int64ToBytes(docId), buf1)
+	fmt.Printf("Type of repo:%T,Value of repo, key:%d, temrs[0]:%s\n", repos, repos.Key, repos.Terms[0])
 	// id ===> [terms + attrs]
-	reposIndex.Set(util.Uint32ToBytes(docId), util.Encoder(repos))
+	encodedData, err := indexDoc.Encode()
+	if err != nil {
+		fmt.Printf("when encode repo,  occur Error:%v\n", err)
+		fmt.Printf("docId:%d, text:%s, terms[0]:%s, title:%s\n", repos.Key, repos.Text, repos.Terms[0], repos.Attrs["title"])
+	} else {
+		fmt.Printf("执行了 repo encode, 但是正常\n")
+	}
+	//buf2, err := util.Encoder(repos)
+	//if err != nil {
+	//	fmt.Printf("when encode repo,  occur Error:%v\n", err)
+	//	fmt.Printf("docId:%d, text:%s, terms[0]:%s, title:%s\n", repos.Key, repos.Text, repos.Terms[0], repos.Attrs["title"])
+	//} else {
+	//	fmt.Printf("执行了 repo encode, 但是正常")
+	//}
+	reposIndex.Set(util.Int64ToBytes(docId), encodedData)
 }
 
-func (e *Engine) PrepareForHandle(terms []string, docId uint32) ([]string, []string) {
+func (e *Engine) PrepareForHandle(terms []string, docId int64) ([]string, []string) {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()
 
 	docIndex := e.GetShardNumByDocId(docId)
 	positiveIndex := e.PositiveIndexStorage[docIndex] // 从里面取到的list是docId ===> term list
-	buf, exist := positiveIndex.Get(util.Uint32ToBytes(docId))
+	buf, exist := positiveIndex.Get(util.Int64ToBytes(docId))
 	var terms2bRemoved []string
 	var terms2bInserted []string
 	if !exist { // docId 本身就是不存在的，那么直接添加索引数据
 		terms2bInserted = terms
 	} else { // docId 本身是存在的，那么本次传递过来的数据可能涉及到倒排索引的更新(新建、删除)
-		var oldTermList []string
+		oldTermList := make([]string, 0)
 		util.Decoder(buf, &oldTermList)
 		// 需要被删除掉的 terms
 		for _, oldTerm := range oldTermList {
@@ -178,12 +201,12 @@ func (e *Engine) PrepareForHandle(terms []string, docId uint32) ([]string, []str
 }
 
 // 给到 term 对应的倒排链中添加一个 docId
-func (e *Engine) AddDocIdInInvertIndex(term string, docId uint32) {
+func (e *Engine) AddDocIdInInvertIndex(term string, docId int64) {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()
 
 	fmt.Println("执行倒排索引结构的增添, term:", term, ", docId:", docId)
-	var docIdList = make([]uint32, 0)
+	var docIdList = make([]int64, 0)
 	invertIndex := e.InvertedIndexStorage[e.GetShardNumByTerm(term)]
 	buf, exist := invertIndex.Get([]byte(term))
 	if !exist {
@@ -197,14 +220,18 @@ func (e *Engine) AddDocIdInInvertIndex(term string, docId uint32) {
 		fmt.Printf("AddInvertIndex function, 将%d添加到%s对应的倒排拉链中\n", docId, term)
 	}
 	// 将更新后的 docIdList 设置到 db 中
-	invertIndex.Set([]byte(term), util.Encoder(docIdList))
+	buf1, err := util.Encoder(docIdList)
+	if err != nil {
+		fmt.Printf("when encode docIdList, error occur:%v\n", err)
+	}
+	invertIndex.Set([]byte(term), buf1)
 }
 
-func (e *Engine) RemoveDocIdInInvertIndex(term string, docId uint32) {
+func (e *Engine) RemoveDocIdInInvertIndex(term string, docId int64) {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()
 
-	var docIdList = make([]uint32, 0)
+	var docIdList = make([]int64, 0)
 	invertIndex := e.InvertedIndexStorage[e.GetShardNumByTerm(term)]
 	buf, exist := invertIndex.Get([]byte(term))
 	if exist {
@@ -217,7 +244,11 @@ func (e *Engine) RemoveDocIdInInvertIndex(term string, docId uint32) {
 				panic(err)
 			}
 		} else {
-			invertIndex.Set([]byte(term), util.Encoder(docIdList))
+			buf1, err := util.Encoder(docIdList)
+			if err != nil {
+				fmt.Printf("when encode docIdlist, error occr:%v\n", err)
+			}
+			invertIndex.Set([]byte(term), buf1)
 		}
 	}
 }
@@ -243,6 +274,13 @@ func (e *Engine) Search(request *model.SearchRequest) (*model.SimpleSearchRespon
 	e.AddAttrs2ContextByDocId(searchContext, wg)
 	// 5. AssignScore 赋分数
 	searchContext.AssignScores()
+	// 6. 排序
+	stdsort.Sort(model.CandidateItemSlice(searchContext.CandidateItems))
+	// 7.再次进行截断
+	if len(searchContext.CandidateItems) > 25 {
+		fmt.Printf("最终排序后进行截断, before:%d, after:25\n", len(searchContext.CandidateItems))
+		searchContext.CandidateItems = searchContext.CandidateItems[:25]
+	}
 	// 6. 这里对于 query 词加到 Trie 树中，用于关键词提示(todo : 后面需要在启动的时候将一些热搜词直接初始化好)
 	e.TrieReminder.Add(request.Query)
 	response := &model.SimpleSearchResponse{
@@ -256,7 +294,7 @@ func (e *Engine) AddDocIdList2ContextByTerm(term string, context *sort.SearchCon
 	defer wg.Done()
 	index := e.GetShardNumByTerm(term)
 	invertIndex := e.InvertedIndexStorage[index]
-	var docIdList []uint32
+	var docIdList []int64
 	buf, exist := invertIndex.Get([]byte(term))
 	if exist {
 		util.Decoder(buf, &docIdList)
@@ -267,16 +305,38 @@ func (e *Engine) AddDocIdList2ContextByTerm(term string, context *sort.SearchCon
 func (e *Engine) AddAttrs2ContextByDocId(context *sort.SearchContext, wg *sync.WaitGroup) {
 	// 获得 docId 对应的文档库，拿到一些特征（例如Title、URL、作者、文档的描述等等）
 	// 这里可以开启多个 goroutine 同时获取 doc 对应的特征
+	var newCandidateItems []model.CandidateItem
+	var newCandidateIds []int64
 	wg.Add(len(context.CandidateItems))
 	for i, item := range context.CandidateItems {
 		docId := item.Id
 		go e.GetAttrsFromStorageByDocId(docId, &context.CandidateItems[i], wg)
 	}
 	wg.Wait()
+	for i, v := range context.CandidateItems {
+		if v.Title == "" || v.URL == "" || v.URL == " " {
+			continue
+		}
+		newCandidateItems = append(newCandidateItems, v)
+		newCandidateIds = append(newCandidateIds, context.CandidateDocIds[i])
+	}
+	if len(newCandidateItems) != len(newCandidateIds) {
+		fmt.Printf("异常！！！！！经过过滤的结果集的docList和Candidate长度不一样！！！！！%d:%d\n",
+			len(newCandidateIds), len(newCandidateItems))
+	}
+	if len(newCandidateItems) != len(context.CandidateItems) {
+		fmt.Printf("对于候选集合中的空结果集进行了筛选，origin:%d, after:%d\n", len(context.CandidateItems), len(newCandidateItems))
+		context.CandidateDocIds = newCandidateIds
+		context.CandidateItems = newCandidateItems
+	}
+	// 算是首次召回的截断
+	if len(context.CandidateItems) > 60 {
+		context.CandidateItems = context.CandidateItems[:60]
+	}
 }
 
 // GetAttrsFromStorageByDocId 函数获取 doc 对应的文档，从中取出来特征并且赋值给传入的 候选集 的字段中
-func (e *Engine) GetAttrsFromStorageByDocId(docId uint32, candidateItem *model.CandidateItem, wg *sync.WaitGroup) {
+func (e *Engine) GetAttrsFromStorageByDocId(docId int64, candidateItem *model.CandidateItem, wg *sync.WaitGroup) {
 	e.mutex.Lock()
 	e.mutex.Unlock()
 	defer wg.Done()
@@ -284,30 +344,42 @@ func (e *Engine) GetAttrsFromStorageByDocId(docId uint32, candidateItem *model.C
 	shardIndex := e.GetShardNumByDocId(docId)
 	storageIndex := e.RepositoryStorage[shardIndex]
 
-	buf, exist := storageIndex.Get(util.Uint32ToBytes(docId))
+	buf, exist := storageIndex.Get(util.Int64ToBytes(docId))
 	if exist {
-		repos := new(model.RepositoryIndexDoc)
-		util.Decoder(buf, &repos)
+		fmt.Printf("存在docId对应的attr, docId:%d\n", docId)
+		//repos := new(model.RepositoryIndexDoc)
+		var repos model.IndexDoc
+		//util.Decoder(buf)
+		err := repos.Decode(buf)
+		if err != nil {
+			fmt.Println("Error decoding:", err)
+			return
+		}
 		attrs := repos.Attrs
-		titleInterface := attrs["title"]
-		urlInterface := attrs["page_url"]
-		if pageUrl, ok := urlInterface.(string); ok {
-			candidateItem.URL = pageUrl
-			fmt.Printf("Assign url, docId:%d, url:%s\n", candidateItem.Id, candidateItem.URL)
-		} else {
-			fmt.Printf("There is no url in attrs, docId:%d\n", candidateItem.Id)
-		}
-		if title, ok := titleInterface.(string); ok {
-			candidateItem.Title = title
-			fmt.Printf("Assign title, docId:%d, title:%s\n", candidateItem.Id, candidateItem.Title)
-		}
+		candidateItem.Title = attrs["title"]
+		candidateItem.URL = attrs["page_url"]
+		candidateItem.Description = attrs["description"]
+		candidateItem.KeyWords = attrs["keywords"]
+		fmt.Printf("Assign url, docId:%d, url:%s\n", candidateItem.Id, candidateItem.URL)
+		//titleInterface := attrs["title"]
+		//urlInterface := attrs["page_url"]
+		//if pageUrl, ok := urlInterface.(string); ok {
+		//	candidateItem.URL = pageUrl
+		//	fmt.Printf("Assign url, docId:%d, url:%s\n", candidateItem.Id, candidateItem.URL)
+		//} else {
+		//	fmt.Printf("There is no url in attrs, docId:%d\n", candidateItem.Id)
+		//}
+		//if title, ok := titleInterface.(string); ok {
+		//	candidateItem.Title = title
+		//	fmt.Printf("Assign title, docId:%d, title:%s\n", candidateItem.Id, candidateItem.Title)
+		//}
 	} else {
 		fmt.Printf("There is no doc in storage, doc id:%d\n", docId)
 	}
 }
 
-func (e *Engine) GetShardNumByDocId(docId uint32) int {
-	return int(docId % uint32(e.ShardNum))
+func (e *Engine) GetShardNumByDocId(docId int64) int {
+	return int(docId % int64(e.ShardNum))
 }
 
 func (e *Engine) GetShardNumByDocIdStr(docId string) int {

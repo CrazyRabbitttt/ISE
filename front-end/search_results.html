@@ -59,50 +59,49 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Search Results</h1>
-        <div class="result-group" id="searchResults"></div>
-    </div>
+<div class="container">
+    <h1>Search Results</h1>
+    <div class="result-group" id="searchResults"></div>
+</div>
 
-    <script>
-        // 解析 URL 参数，获取从 search.html 传递过来的搜索结果 JSON 数据
-        var params = new URLSearchParams(window.location.search);
-        var searchResultsJson = params.get('results');
+<script>
+    // 解析 URL 参数，获取从 search.html 传递过来的搜索结果 JSON 数据
+    var params = new URLSearchParams(window.location.search);
+    var searchResultsJson = params.get('results');
 
-        // 将 JSON 字符串解析为 JavaScript 对象
-        var searchResults = JSON.parse(searchResultsJson);
+    // 将 JSON 字符串解析为 JavaScript 对象
+    var searchResults = JSON.parse(searchResultsJson);
 
-        // 获取展示搜索结果的 DOM 元素
-        var resultsDiv = document.getElementById("searchResults");
+    // 获取展示搜索结果的 DOM 元素
+    var resultsDiv = document.getElementById("searchResults");
 
-        // 遍历搜索结果，将每个结果展示在页面上
-        searchResults.forEach(function(candidate) {
-            // 创建一个新的结果项容器
-            var resultItem = document.createElement("div");
-            resultItem.classList.add("result-item");
+    // 遍历搜索结果，将每个结果展示在页面上
+    searchResults.forEach(function(candidate) {
+        // 创建一个新的结果项容器
+        var resultItem = document.createElement("div");
+        resultItem.classList.add("result-item");
 
-            // 创建标题元素并设置文本内容
-            var titleElement = document.createElement("h3");
-            titleElement.textContent = candidate.title;
+        // 创建标题元素并设置文本内容
+        var titleElement = document.createElement("h3");
+        titleElement.textContent = candidate.title;
 
-            // 创建链接元素并设置链接地址和文本内容
-            var linkElement = document.createElement("a");
-            linkElement.href = "https://www.baidu.com";
-            linkElement.textContent = "https://www.baidu.com";
+        // 创建链接元素并设置链接地址和文本内容
+        var linkElement = document.createElement("a");
+        linkElement.href = candidate.url;
+        linkElement.textContent = candidate.url;
 
-            // 创建描述元素并设置文本内容
-            var descriptionElement = document.createElement("p");
-            descriptionElement.textContent = candidate.description;
+        // 创建描述元素并设置文本内容
+        var descriptionElement = document.createElement("p");
+        descriptionElement.textContent = candidate.description;
 
-            // 将标题、链接和描述元素添加到结果项容器中
-            resultItem.appendChild(titleElement);
-            resultItem.appendChild(linkElement);
-            resultItem.appendChild(descriptionElement);
+        // 将标题、链接和描述元素添加到结果项容器中
+        resultItem.appendChild(titleElement);
+        resultItem.appendChild(linkElement);
+        resultItem.appendChild(descriptionElement);
 
-            // 将结果项容器添加到页面中
-            resultsDiv.appendChild(resultItem);
-        });
-    </script>
+        // 将结果项容器添加到页面中
+        resultsDiv.appendChild(resultItem);
+    });
+</script>
 </body>
 </html>
-

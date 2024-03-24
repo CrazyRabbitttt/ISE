@@ -12,12 +12,13 @@ import json
 def sendPost():
     api_url = 'http://localhost:8080/api/addIndex?database=default'
     data = {}
-    data['key'] = 1122334488990088
-    data['terms'] = "pencil pen"
+    data['key'] = 115656
+    data['terms'] = "极客时间"
     if 'attrs' not in data:
         data['attrs'] = {}
-    data['attrs']['title'] = "This is the title of pen."
+    data['attrs']['title'] = "This is the title of test page_url"
     data['attrs']['number'] = 123456
+    data['attrs']['page_url'] = "https://www.runoob.com/w3cnote/scrapy-detail.html"
 
     # json_data = json.dumps(data)
     headers = {'Content-Type': 'application/json'}

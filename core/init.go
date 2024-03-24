@@ -3,9 +3,11 @@ package core
 import (
 	"Search-Engine/config"
 	"Search-Engine/search-engine/container"
+	"Search-Engine/search-engine/model"
 	tokenizer2 "Search-Engine/search-engine/words/tokenizer"
 	"Search-Engine/web/router"
 	"Search-Engine/web/service"
+	"encoding/gob"
 )
 
 // 进行初始化
@@ -16,6 +18,8 @@ func Initialize() {
 	tokenizer := tokenizer2.NewTokenizer()
 	// 初始化全局的 Container
 	container.InitGlobalContainer(tokenizer)
+	// 注册gob
+	gob.Register(model.IndexDoc{})
 	// 初始化业务逻辑
 	service.InitService()
 	// 初始化路由

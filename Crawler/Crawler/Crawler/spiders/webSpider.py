@@ -26,8 +26,7 @@ def is_static_url(url):
 
 class WebSpider(scrapy.Spider):
     name = 'webSpider'
-    start_urls = ['https://www.hao123.com/',
-                  'https://www.iteye.com/', 'https://www.cnblogs.com/']
+    start_urls = ['https://tuijian.hao123.com/']
 
     # 抓取的规则
     rule_encode = "//meta/@charset"
@@ -38,7 +37,7 @@ class WebSpider(scrapy.Spider):
     def parse(self, response):
         page_url = response.request.url
         print("-"*100)
-        print("开始爬取%s......" % page_url)
+        # print("开始爬取%s......" % page_url)
         if response.status == 200:
             # 获取内容
             encode = response.xpath(self.rule_encode).extract()
@@ -59,8 +58,8 @@ class WebSpider(scrapy.Spider):
                 urls_cleaned.append(full_url)
 
             # 如果符合详情页规则，就下载该网页,提取其正文
-            print("该网页符合详情页规则.....")
-            print("提取[ %s ]携带的正文标题中......" % page_url)
+            # print("该网页符合详情页规则.....")
+            # print("提取[ %s ]携带的正文标题中......" % page_url)
 
             extractor = MainContent()
             title = extractor.extract(page_url, response.body)

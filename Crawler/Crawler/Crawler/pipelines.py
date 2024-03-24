@@ -25,7 +25,6 @@ class CrawlerPipeline(object):
         body = item.gen_http_body()
         # print("需要处理的URL:", body['attrs']['page_url'])
         body['key'] = docKey
-        print("The docKey is", docKey)
         try:
             if body['terms'] == "" or body['terms'] == ' ':
                 print("len of terms is:", len(body["terms"]))
@@ -36,14 +35,17 @@ class CrawlerPipeline(object):
 
         headers = {'Content-Type': 'application/json'}
         try:
-            print("send post method 2 server")
-            response = requests.post(self.api_url, json=body, headers=headers)
+            if body['attrs']['title'] != " " and body['attrs']['title'] != "":
+                print("send post method 2 server")
+                response = requests.post(self.api_url, json=body, headers=headers)
+                print("post body:", body)
+            else:
+                print("Crawl nothing, do not send http request")
         except Exception as e:
             print("Post method error:",e)
-        print("end of send method function....")
         if response.status_code == 200:
-            print(f"Send index data 2 back end successfully, key:{docKey}, title:{body['terms']['title']}")
+            print(f"Send index failed, status code:{response.status_code}, text:{response.text}")
         else:
             print(f"Send index failed, status code:{response.status_code}, text:{response.text}")
-        return item
+        # return item
     

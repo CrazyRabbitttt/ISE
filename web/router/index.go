@@ -9,5 +9,6 @@ func InitIndexRouter(group *gin.RouterGroup) {
 	indexGroup := group.Group("")
 	{
 		indexGroup.POST("/addIndex", controller.AddIndex)
+		indexGroup.POST("/4debug", controller.DebugIndex)
 	}
 }

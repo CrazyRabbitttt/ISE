@@ -1,9 +1,11 @@
 package util
 
 import (
+	"Search-Engine/search-engine/model"
 	"bytes"
 	"encoding/binary"
 	"encoding/gob"
+	"fmt"
 	"github.com/lithammer/shortuuid/v4"
 	"regexp"
 	"strings"
@@ -84,23 +86,82 @@ func String2Int(str string) uint32 {
 	return Murmur3([]byte(str))
 }
 
+func BytesToInt64(b []byte) int64 {
+	var num int64
+	buf := bytes.NewBuffer(b)
+	err := binary.Read(buf, binary.BigEndian, &num)
+	if err != nil {
+		fmt.Printf("In bytes 2 int64 function, error occur, numer:%d,", num)
+		println("error:", err)
+		panic(err)
+	}
+	return num
+}
+
+func Int64ToBytes(num int64) []byte {
+	buf := new(bytes.Buffer)
+	err := binary.Write(buf, binary.BigEndian, num)
+	if err != nil {
+		fmt.Printf("In int64 2 bytes function, error occur, numer:%d,", num)
+		println("error:", err)
+	}
+	return buf.Bytes()
+}
+
 func Uint32ToBytes(num uint32) []byte {
 	var buf = make([]byte, 4)
 	binary.BigEndian.PutUint32(buf, num)
 	return buf
 }
 
-func Encoder(data interface{}) []byte {
+func RepoEncoder(data interface{}) ([]byte, error) {
 	if data == nil {
-		return nil
+		return nil, nil
+	}
+
+	// 确保 data 是 RepositoryIndexDoc 类型
+	repositoryDoc, ok := data.(*model.RepositoryIndexDoc)
+	if !ok {
+		return nil, fmt.Errorf("data 不是 *RepositoryIndexDoc 类型")
+	}
+
+	buffer := new(bytes.Buffer)
+	encoder := gob.NewEncoder(buffer)
+
+	// 序列化 Key、Text 和 Attrs 字段
+	err := encoder.Encode(repositoryDoc.Key)
+	if err != nil {
+		return nil, err
+	}
+	err = encoder.Encode(repositoryDoc.Text)
+	if err != nil {
+		return nil, err
+	}
+	err = encoder.Encode(repositoryDoc.Attrs)
+	if err != nil {
+		return nil, err
+	}
+
+	// 序列化 Terms 字段
+	err = encoder.Encode(repositoryDoc.Terms)
+	if err != nil {
+		return nil, err
+	}
+
+	return buffer.Bytes(), nil
+}
+
+func Encoder(data interface{}) ([]byte, error) {
+	if data == nil {
+		return nil, nil
 	}
 	buffer := new(bytes.Buffer)
 	encoder := gob.NewEncoder(buffer)
 	err := encoder.Encode(data)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return buffer.Bytes()
+	return buffer.Bytes(), nil
 }
 
 // 从 Leveldb 中将读取到的value解析出来
@@ -116,7 +177,7 @@ func Decoder(data []byte, v interface{}) {
 	}
 }
 
-func RemoveUint32ValueInArray(array []uint32, id uint32) []uint32 {
+func RemoveUint32ValueInArray(array []int64, id int64) []int64 {
 	var removeIndex int
 	for index, value := range array {
 		if value == id {
@@ -127,7 +188,7 @@ func RemoveUint32ValueInArray(array []uint32, id uint32) []uint32 {
 	return append(array[:removeIndex], array[removeIndex+1:]...)
 }
 
-func ExistInArrayUint32(array []uint32, id uint32) (int, bool) {
+func ExistInArrayUint32(array []int64, id int64) (int, bool) {
 	for index, value := range array {
 		if value == id {
 			return index, true

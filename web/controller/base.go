@@ -53,7 +53,7 @@ func InitReminder(c *gin.Context) {
 	}
 	var querys []string
 	for _, v := range request.Attrs {
-		querys = append(querys, v.(string))
+		querys = append(querys, v)
 	}
 	fmt.Println("len of request querys:", len(querys))
 	fmt.Printf("before init, print querys:%v", querys)
